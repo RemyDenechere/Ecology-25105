@@ -92,6 +92,21 @@ PredgrowthEff = 2/3000;
 sym2poly(subs(Neq, [a, c, m], [PredgrowthEff, clear, 1]))
 sym2poly(subs(Peq, [r, c], [1, clear]))
 
+[t,y] = ode45(@(t,y) solve_ex3(t, y), [1, 100], [4,4])
+
+subplot(1,2,1)
+semilogy(t, y)
+legend('Prey', 'Predator')
+ylabel('Concentration (#/V)')
+xlabel('time (day)')
+title('Concentration over time')
+
+subplot(1,2,2)
+plot( y(:,2), y(:,1))
+ylabel('Prey (#/V)')
+xlabel('Predator (#/V)')
+title('Prey as a function of Pred')
+
 %% function definitions
 function dNdt = solve_pop(t, N0, param)
 % Initial condition: 
@@ -99,6 +114,24 @@ N = N0;
 
 % ODE: 
 dNdt = param.r.*N.*(1-N/param.K);
+end
+
+function y = solve_ex3(t, y0)
+% parameters: 
+c = 0.0013; 
+r = 1; 
+m = 0.3; 
+a = 2/3000; 
+
+% Initial condition 
+N = y0(1);
+P = y0(2); 
+
+% ODE: 
+dNdt = r*N - c*N*P;
+dPdt = a*c*N*P - m*P;
+
+y = [dNdt, dPdt]'
 end
 
 

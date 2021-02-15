@@ -21,7 +21,7 @@ param.r = 1.5; % Ind per day
 param.K = 50; % ind
 dNdt = param.r*N.*(1-N/param.K);
 
-subplot(1,2,1)
+
 plot(N, dNdt)
 hold on 
 plot([0, 100], [0, 0], 'k--', [50, 50], [-160, 0])
@@ -29,17 +29,11 @@ ylabel('dN/dt')
 xlabel('N')
 
 % solve the diff equation: 
-tspan = [0, 10];
-param.r = [0.5, 1 1.5]'; % 3 different growth rate
-N0 = [4, 4, 4]; 
+tspan = [0, 350];
+N0 = 4; 
 [t,y] = ode45(@(t, N) solve_pop(t, N, param), tspan, N0); % See definition 
-
-subplot(1,2,2)
 plot(t, y)
-leg = legend(num2str(param.r))
-title(leg, 'r')
-ylabel('N')
-xlabel('t (days)')
+
 
 %% Exercice2: Life Table
 delta = 0.1; % d-1
@@ -98,7 +92,7 @@ function dNdt = solve_pop(t, N0, param)
 N = N0;
 
 % ODE: 
-dNdt = param.r.*N.*(1-N/param.K);
+dNdt = param.r*N*(1-N/param.K);
 end
 
 

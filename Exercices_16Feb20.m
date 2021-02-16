@@ -5,43 +5,60 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Exercise 1: Logistic growth (Verhulst model)
-% Find a locla maximum: dN/dt =0 + d2N/dndt <0: 
-% here a polynomial function order 2 with -aN2 then there is one maximum we
-% only need to solve dN/dt = 0
-
+% Find a locla maximum: d(dN/dt)/dN = 0 
+% here dN/dt is a polynomial function of order 2 with -aN2 then there is one maximum
+% exemple with a k = 50
+clf
+figure
 % solving using symbolic language:  
 syms r N K
-dNdt = r*N*(1-N/K);
-Sol = solve(dNdt == 0, N)
+G = r*N*(1-N/K); % logistic growth 
+dGdN = r - 2*r*N/K % derivative of G
+Sol = solve(dGdN == 0, N) % max of G
 
 %  going a bit further: ---------------------------------------------------
-% plot the diff eq: 
-N = linspace(0,100,100); %ind
-param.r = 1.5; % Ind per day
-param.K = 50; % ind
-dNdt = param.r*N.*(1-N/param.K);
-
-subplot(1,2,1)
-plot(N, dNdt)
-hold on 
-plot([0, 100], [0, 0], 'k--', [50, 50], [-160, 0])
-ylabel('dN/dt')
-xlabel('N')
-
 % solve the diff equation: 
 tspan = [0, 10];
 param.r = [0.5, 1 1.5]'; % 3 different growth rate
 N0 = [4, 4, 4]; 
 [t,y] = ode45(@(t, N) solve_pop(t, N, param), tspan, N0); % See definition 
 
-subplot(1,2,2)
+subplot(2,2,1)
 plot(t, y)
 leg = legend(num2str(param.r))
 title(leg, 'r')
-ylabel('N')
+ylabel('N population size')
 xlabel('t (days)')
+title('Population dynamic')
+
+% plot the diff eq: 
+N = linspace(0,100,100); % Ind
+param.r = 1.5; % Ind per day
+param.K = 50; % ind
+dNdt = param.r*N.*(1-N/param.K);
+
+subplot(2,2,2)
+plot(N, dNdt)
+hold on 
+plot([0, 100], [0, 0], 'k--', [50, 50], [-160, 0])
+ylabel('G = dN/dt')
+xlabel('N population size')
+title('Fisheries yield G')
+
+% plot the derivative of G:
+dGdN = param.r - 2*param.r*N/param.K;
+subplot(2,2,3)
+semilogx(N, dGdN)
+hold on 
+plot([1, 100], [0, 0], 'k--')
+hold on 
+plot([25, 25], [-10, 0])
+ylabel('dG/dN = d(dN/dt)/dN')
+xlabel('N population size')
+title('Derivative of Fisheries yield dG/dN')
 
 %% Exercice2: Life Table
+figure
 delta = 0.1; % d-1
 kappa = 5; %d
 m = 25; % eggs
@@ -52,21 +69,24 @@ mx = x; mx(x<kappa) = 0; mx(x>=kappa) = m;
 % Survival rate:
 subplot(2,2,1)
 lx = exp(-delta*x); 
-plot(x, lx)
+plot(x, lx, 'Linewidth', 1.5)
 xlabel('Age (day)')
 ylabel('Survival prob')
+title('l(x) = exp(- \delta x) ')
 
 % egg production: 
 subplot(2,2,2) 
-plot(x, mx)
+plot(x, mx, 'Linewidth', 1.5)
 xlabel('Age (day)')
 ylabel('Egg production')
+title('Fecondity')
 
 % potential egg production: 
 subplot(2,2,3)
-plot(x, lx.*mx)
+plot(x, lx.*mx, 'Linewidth', 1.5)
 xlabel('Age (day)')
-ylabel('Potential egg production')
+ylabel('R_0')
+title('Reproductive output, R_0 = \int{ l_x m_x dx}')
 
 % solving R0
 R0 = lx(1:end-1).*mx(1:end-1) * dx' % # of offspring (Integration as a product of matrix )
@@ -92,7 +112,7 @@ PredgrowthEff = 2/3000;
 sym2poly(subs(Neq, [a, c, m], [PredgrowthEff, clear, 1]))
 sym2poly(subs(Peq, [r, c], [1, clear]))
 
-[t,y] = ode45(@(t,y) solve_ex3(t, y), [1, 100], [4,4])
+[t,y] = ode45(@(t,y) solve_ex3(t, y), [1, 100], [4,4]);
 
 subplot(1,2,1)
 semilogy(t, y)

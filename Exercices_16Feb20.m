@@ -89,10 +89,10 @@ ylabel('R_0')
 title('Reproductive output, R_0 = \int{ l_x m_x dx}')
 
 % solving R0
-R0 = lx(1:end-1).*mx(1:end-1) * dx' % # of offspring (Integration as a product of matrix )
+R0 = lx(1:end-1).*mx(1:end-1) * dx'; % # of offspring (Integration as a product of matrix )
 % solving T: 
-T = (x(1:end-1).*lx(1:end-1).*mx(1:end-1) * dx')/R0 % day
-r = log(R0)/T % log(egg)/day
+T = (x(1:end-1).*lx(1:end-1).*mx(1:end-1) * dx')/R0; % day
+r = log(R0)/T; % egg/day
 
 %% Exercice 3: Lotka?Volterra
 % 2. Solve equations
